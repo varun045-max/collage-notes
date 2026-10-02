@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python Notes</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background: linear-gradient(135deg, #FFDEE9, #B5FFFC);
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 40px;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    header img {
+      height: 50px;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    header img:hover { transform: scale(1.1); }
+
+    nav {
+      display: flex;
+      gap: 20px;
+    }
+    nav a {
+      text-decoration: none;
+      color: #333;
+      font-weight: 600;
+      transition: color 0.3s, transform 0.3s;
+    }
+    nav a:hover {
+      color: #0077ff;
+      transform: translateY(-2px);
+    }
+
+    .menu-btn {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+    }
+    .menu-btn div {
+      width: 25px;
+      height: 3px;
+      background: #333;
+      border-radius: 5px;
+      transition: all 0.3s;
+    }
+    @media(max-width: 768px) {
+      nav {
+        display: none;
+        flex-direction: column;
+        background: #fff;
+        position: absolute;
+        top: 70px;
+        right: 20px;
+        padding: 15px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      }
+      nav.active { display: flex; }
+      .menu-btn { display: flex; }
+    }
+
+    .hero {
+      text-align: center;
+      padding: 80px 20px;
+      animation: fadeIn 2s ease;
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 20px;
+      color: #222;
+    }
+    .hero p {
+      font-size: 1.1rem;
+    }
+    @keyframes fadeIn {
+      from {opacity: 0; transform: translateY(30px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    .notes {
+      padding: 50px 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+    }
+    .card h2 {
+      margin-bottom: 15px;
+    }
+    .download-btn {
+      display: inline-block;
+      margin-top: 10px;
+      background: #0077ff;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 25px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.3s, transform 0.3s;
+    }
+    .download-btn:hover {
+      background: #0056b3;
+      transform: scale(1.05);
+    }
+
+    footer {
+      text-align: center;
+      padding: 15px;
+      background: #333;
+      color: white;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <!-- Logo (replace logo.png in your folder) -->
+    <img src="logo.png" alt="Website Logo">
+    <nav id="navLinks">
+      <a href="index.html">Home</a>
+      <a href="python.html">Python</a>
+      <a href="dccn.html">DCCN</a>
+      <a href="os.html">OS</a>
+      <a href="dbms.html">DBMS</a>
+    </nav>
+    <div class="menu-btn" id="menuBtn">
+      <div></div><div></div><div></div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>Python Notes</h1>
+    <p>Click below to download lesson-wise PDF.</p>
+  </section>
+
+  <section class="notes">
+    <!-- Lesson PDFs -->
+    <div class="card">
+      <h2>Lesson 1: Introduction</h2>
+      <a class="download-btn" href="Python  Unit-1.pdf" download>Download</a>
+    </div>
+    <div class="card">
+      <h2>Lesson 2: Data Types</h2>
+      <a class="download-btn" href="python unit 2 cm (1).pdf" download>Download</a>
+    </div>
+    <div class="card">
+      <h2>Lesson 3: contrl flow and loops</h2>
+      <a class="download-btn" href="pdfs/python_lesson3.pdf" download>Download</a>
+    </div>
+    <div class="card">
+      <h2>UNIT 4</h2>
+      <a class="download-btn" href="UNIT-4 PYTHON NOTES.pdf" download>Download</a>
+    </div>
+    <div class="card">
+      <h2>Lesson 5: functions and arrays</h2>
+      <a class="download-btn" href="python unit 5 DT 08-11-2022.pdf" download>Download</a>
+    </div>
+
+  <footer>
+    <p>© 2025 College Notes Hub | Python Subject Page</p>
+  </footer>
+
+  <script>
+    const menuBtn = document.getElementById("menuBtn");
+    const navLinks = document.getElementById("navLinks");
+    menuBtn.addEventListener("click", () => {
+      navLinks.classList.toggle("active");
+    });
+  </script>
+</body>
+</html>
