@@ -24,7 +24,7 @@
         }
 
         h1 {
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
 
         .card {
@@ -72,13 +72,21 @@
             opacity: 0.9;
         }
 
+        .logout {
+            background: #d33;
+        }
+
         #message {
             margin-top: 15px;
             font-weight: bold;
         }
 
-        .logout {
-            background: #d33;
+        .hidden {
+            display: none;
+        }
+
+        .login-btn {
+            background: #2563eb;
         }
     </style>
 </head>
@@ -87,70 +95,418 @@
 
 <div class="container">
 
-    <h1>Admin Panel</h1>
+    <!-- LOGIN -->
+    <div id="loginSection" class="card">
 
-    <div class="card">
+        <h1>Admin Login</h1>
 
-        <h2>Upload New Note</h2>
+        <label>Email</label>
+        <input type="email" id="email" placeholder="Admin email">
 
-        <label>Subject</label>
-        <select id="subject">
-            <option value="">Select Subject</option>
-            <option value="python">Python</option>
-            <option value="dbms">DBMS</option>
-            <option value="dccn">DCCN</option>
-            <option value="os">Operating Systems</option>
-        </select>
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Password">
 
-        <label>Note Title</label>
-        <input
-            type="text"
-            id="title"
-            placeholder="Example: Python Unit 1"
-        >
-
-        <label>Description</label>
-        <textarea
-            id="description"
-            placeholder="Short description about this note"
-        ></textarea>
-
-        <label>PDF File</label>
-        <input type="file" id="pdf" accept=".pdf">
-
-        <button onclick="uploadNote()">
-            Upload Note
+        <button class="login-btn" onclick="login()">
+            Login
         </button>
 
-        <p id="message"></p>
+        <p id="loginMessage"></p>
 
     </div>
 
-    <div class="card">
 
-        <h2>Admin Account</h2>
+    <!-- ADMIN PANEL -->
+    <div id="adminSection" class="hidden">
 
-        <button class="logout" onclick="logout()">
-            Logout
-        </button>
+        <h1>College Notes - Admin Panel</h1>
+
+        <div class="card">
+
+            <h2>Upload New Note</h2>
+
+            <label>Subject</label>
+
+            <select id="subject">
+                <option value="">Select Subject</option>
+            </select>
+
+
+            <label>Note Title</label>
+
+            <input
+                type="text"
+                id="title"
+                placeholder="Example: Python Unit 1"
+            >
+
+
+            <label>Description</label>
+
+            <textarea
+                id="description"
+                placeholder="Short description about this note"
+            ></textarea>
+
+
+            <label>PDF File</label>
+
+            <input
+                type="file"
+                id="pdf"
+                accept=".pdf,application/pdf"
+            >
+
+
+            <button onclick="uploadNote()">
+                Upload Note
+            </button>
+
+            <p id="message"></p>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2>Admin Account</h2>
+
+            <button class="logout" onclick="logout()">
+                Logout
+            </button>
+
+        </div>
 
     </div>
 
 </div>
 
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
 <script>
-async function uploadNote() {
 
-    document.getElementById("message").innerText =
-        "Upload system will be connected next.";
+    // ==========================================
+    // PUT YOUR SUPABASE DETAILS HERE
+    // ==========================================
 
-}
+    const SUPABASE_URL = "https://ptaenwdmcseesgemkywb.supabase.co/rest/v1/";
 
-async function logout() {
+    const SUPABASE_KEY = "sb_publishable_HrM8m6Pd482q5sCMa1f0IA_A0pt1i1m";
 
-    alert("Logout system will be connected next.");
 
-}
+    const { createClient } = supabase;
+
+    const db = createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+    // ==========================================
+    // LOGIN
+    // ==========================================
+
+    async function login() {
+
+        const email =
+            document.getElementById("email").value.trim();
+
+        const password =
+            document.getElementById("password").value;
+
+        const message =
+            document.getElementById("loginMessage");
+
+
+        if (!email || !password) {
+
+            message.innerText =
+                "Please enter email and password.";
+
+            return;
+        }
+
+
+        message.innerText = "Logging in...";
+
+
+        const { data, error } =
+            await db.auth.signInWithPassword({
+                email: email,
+                password: password
+            });
+
+
+        if (error) {
+
+            message.innerText =
+                "Login failed: " + error.message;
+
+            return;
+        }
+
+
+        await checkAdmin();
+    }
+
+
+    // ==========================================
+    // CHECK ADMIN
+    // ==========================================
+
+    async function checkAdmin() {
+
+        const {
+            data: { user }
+        } = await db.auth.getUser();
+
+
+        if (!user) {
+
+            document
+                .getElementById("loginSection")
+                .classList.remove("hidden");
+
+            document
+                .getElementById("adminSection")
+                .classList.add("hidden");
+
+            return;
+        }
+
+
+        const { data: profile, error } =
+            await db
+                .from("profiles")
+                .select("role")
+                .eq("id", user.id)
+                .single();
+
+
+        if (error || !profile || profile.role !== "admin") {
+
+            await db.auth.signOut();
+
+            document.getElementById("loginMessage").innerText =
+                "Access denied. Admin account required.";
+
+            return;
+        }
+
+
+        document
+            .getElementById("loginSection")
+            .classList.add("hidden");
+
+        document
+            .getElementById("adminSection")
+            .classList.remove("hidden");
+
+
+        loadSubjects();
+    }
+
+
+    // ==========================================
+    // LOAD SUBJECTS
+    // ==========================================
+
+    async function loadSubjects() {
+
+        const { data, error } =
+            await db
+                .from("subjects")
+                .select("id, name")
+                .order("name");
+
+
+        if (error) {
+
+            document.getElementById("message").innerText =
+                "Could not load subjects.";
+
+            return;
+        }
+
+
+        const select =
+            document.getElementById("subject");
+
+
+        select.innerHTML =
+            '<option value="">Select Subject</option>';
+
+
+        data.forEach(subject => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = subject.id;
+
+            option.textContent = subject.name;
+
+            select.appendChild(option);
+
+        });
+    }
+
+
+    // ==========================================
+    // UPLOAD NOTE
+    // ==========================================
+
+    async function uploadNote() {
+
+        const subjectId =
+            document.getElementById("subject").value;
+
+        const title =
+            document.getElementById("title").value.trim();
+
+        const description =
+            document.getElementById("description").value.trim();
+
+        const file =
+            document.getElementById("pdf").files[0];
+
+        const message =
+            document.getElementById("message");
+
+
+        if (!subjectId) {
+
+            message.innerText =
+                "Please select a subject.";
+
+            return;
+        }
+
+
+        if (!title) {
+
+            message.innerText =
+                "Please enter a note title.";
+
+            return;
+        }
+
+
+        if (!file) {
+
+            message.innerText =
+                "Please select a PDF.";
+
+            return;
+        }
+
+
+        if (file.type !== "application/pdf") {
+
+            message.innerText =
+                "Only PDF files are allowed.";
+
+            return;
+        }
+
+
+        message.innerText =
+            "Uploading PDF...";
+
+
+        // Create unique filename
+        const fileName =
+            Date.now() + "_" +
+            file.name.replace(/\s+/g, "_");
+
+
+        const filePath =
+            "notes/" + fileName;
+
+
+        // Upload PDF
+        const { error: uploadError } =
+            await db.storage
+                .from("notes")
+                .upload(filePath, file);
+
+
+        if (uploadError) {
+
+            message.innerText =
+                "PDF upload failed: " +
+                uploadError.message;
+
+            return;
+        }
+
+
+        message.innerText =
+            "PDF uploaded. Saving note...";
+
+
+        // Save note information
+        const { error: insertError } =
+            await db
+                .from("notes")
+                .insert({
+                    subject_id: subjectId,
+                    title: title,
+                    description: description,
+                    pdf_path: filePath
+                });
+
+
+        if (insertError) {
+
+            // Remove uploaded PDF if database insert fails
+            await db.storage
+                .from("notes")
+                .remove([filePath]);
+
+
+            message.innerText =
+                "Could not save note: " +
+                insertError.message;
+
+            return;
+        }
+
+
+        message.innerText =
+            "✅ Note uploaded successfully!";
+
+
+        // Clear form
+        document.getElementById("title").value = "";
+
+        document.getElementById("description").value = "";
+
+        document.getElementById("pdf").value = "";
+
+        document.getElementById("subject").value = "";
+    }
+
+
+    // ==========================================
+    // LOGOUT
+    // ==========================================
+
+    async function logout() {
+
+        await db.auth.signOut();
+
+        location.reload();
+    }
+
+
+    // ==========================================
+    // CHECK LOGIN WHEN PAGE OPENS
+    // ==========================================
+
+    checkAdmin();
+
 </script>
 
 </body>
