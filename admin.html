@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - College Notes</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: auto;
+        }
+
+        h1 {
+            margin-bottom: 25px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        label {
+            display: block;
+            margin: 15px 0 7px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 7px;
+            font-size: 15px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+
+        button {
+            margin-top: 20px;
+            width: 100%;
+            padding: 13px;
+            border: none;
+            border-radius: 7px;
+            background: #222;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        #message {
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        .logout {
+            background: #d33;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Admin Panel</h1>
+
+    <div class="card">
+
+        <h2>Upload New Note</h2>
+
+        <label>Subject</label>
+        <select id="subject">
+            <option value="">Select Subject</option>
+            <option value="python">Python</option>
+            <option value="dbms">DBMS</option>
+            <option value="dccn">DCCN</option>
+            <option value="os">Operating Systems</option>
+        </select>
+
+        <label>Note Title</label>
+        <input
+            type="text"
+            id="title"
+            placeholder="Example: Python Unit 1"
+        >
+
+        <label>Description</label>
+        <textarea
+            id="description"
+            placeholder="Short description about this note"
+        ></textarea>
+
+        <label>PDF File</label>
+        <input type="file" id="pdf" accept=".pdf">
+
+        <button onclick="uploadNote()">
+            Upload Note
+        </button>
+
+        <p id="message"></p>
+
+    </div>
+
+    <div class="card">
+
+        <h2>Admin Account</h2>
+
+        <button class="logout" onclick="logout()">
+            Logout
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+async function uploadNote() {
+
+    document.getElementById("message").innerText =
+        "Upload system will be connected next.";
+
+}
+
+async function logout() {
+
+    alert("Logout system will be connected next.");
+
+}
+</script>
+
+</body>
+</html>
